@@ -20,7 +20,10 @@
 @property (nonatomic, strong)CBService *currentService;
 //currentCharaciteristic
 @property (nonatomic, strong)CBCharacteristic *currentCharacteristic;
-
+//连接成功Block
+@property (nonatomic, copy)ConnectSucceedBlock connectSucceedBlock;
+//连接失败Block
+@property (nonatomic, copy)ConnectFailedBlock connectFailedBlock;
 @end
 
 @implementation BlueTeethTool
@@ -39,9 +42,13 @@
     [self centralManager];
 }
 
-- (void)connectToPeripheral:(CBPeripheral *)peripheral {
-    [self.centralManager connectPeripheral:peripheral options:nil];
+- (void)connectToPeripheral:(CBPeripheral *)peripheral succeed:(nonnull ConnectSucceedBlock)succeedBlock failed:(nonnull ConnectFailedBlock)failedBlock{
     
+    [self.centralManager connectPeripheral:peripheral options:nil];
+    self.connectSucceedBlock = succeedBlock;
+    self.connectFailedBlock = failedBlock;
+    
+    //
     _hud = [MBProgressHUD new];
     AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
     UIWindow *keyWindow = appDelegate.window;
@@ -108,6 +115,7 @@
 
 //连接外设成功
 - (void)centralManager:(CBCentralManager *)central didConnectPeripheral:(CBPeripheral *)peripheral {
+    self.connectSucceedBlock(peripheral);
     
     self.hud.mode = MBProgressHUDModeText;
     self.hud.label.text = [NSString stringWithFormat:@"已连接到：%@", peripheral.name];
@@ -121,6 +129,8 @@
 
 //连接外设失败
 - (void)centralManager:(CBCentralManager *)central didFailToConnectPeripheral:(CBPeripheral *)peripheral error:(NSError *)error {
+    self.connectFailedBlock(error);
+    
     self.hud.mode = MBProgressHUDModeText;
     self.hud.label.text = @"连接失败！";
     [self.hud hideAnimated:YES afterDelay:2.0f];

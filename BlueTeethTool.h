@@ -12,7 +12,10 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef void(^FindNewPeripheralBlock) (void);
+typedef void (^FindNewPeripheralBlock) (void);
+typedef void (^ConnectSucceedBlock) (CBPeripheral *currentPeripheral);
+typedef void (^ConnectFailedBlock) (NSError *error);
+
 
 @interface BlueTeethTool : NSObject
 
@@ -37,7 +40,7 @@ typedef void(^FindNewPeripheralBlock) (void);
 - (void)searchBlueTeethDevices;
 
 //连接蓝夜设备
-- (void)connectToPeripheral:(CBPeripheral *)peripheral;
+- (void)connectToPeripheral:(CBPeripheral *)peripheral succeed:(ConnectSucceedBlock)succeedBlock failed:(ConnectFailedBlock)failedBlock;
 
 //向设备写入数据
 - (void)writeData:(NSData *)data forCurrentCharacteristicWithType:(CBCharacteristicWriteType )type;
