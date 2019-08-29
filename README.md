@@ -19,7 +19,9 @@
 
 ### 方法
 1、初始化
+
 （1）当查找到新的设备时，会调用FindNewPeripheralBlock里的代码
+
 （2）如果有serviceUUID或者characteristicUUID，一定要在初始化的时候进行赋值
 ```
 - (instancetype)initWithFindNewPeripheralBlock:(FindNewPeripheralBlock )findNewPeripheralBlock;
