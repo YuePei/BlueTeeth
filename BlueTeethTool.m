@@ -16,6 +16,8 @@
 @property (nonatomic, strong)CBCentralManager *centralManager;
 //hud
 @property (nonatomic, strong)MBProgressHUD *hud;
+//找到新的蓝牙设备，通过Block告诉控制器：请执行 刷新列表 或者其它操作
+@property (nonatomic, copy)FindNewPeripheralBlock findNewPeripheralBlock;
 //currentService
 @property (nonatomic, strong)CBService *currentService;
 //currentCharaciteristic
@@ -24,6 +26,10 @@
 @property (nonatomic, copy)ConnectSucceedBlock connectSucceedBlock;
 //连接失败Block
 @property (nonatomic, copy)ConnectFailedBlock connectFailedBlock;
+//写入数据成功Block
+@property (nonatomic, copy)WriteDataSucceedBlock writeSucceedBlock;
+//写入数据失败Block
+@property (nonatomic, copy)WriteDataFailedBlock writeFailedBlock;
 @end
 
 @implementation BlueTeethTool
@@ -58,9 +64,12 @@
 }
 
 //写入数据
-- (void)writeData:(NSData *)data forCurrentCharacteristicWithType:(CBCharacteristicWriteType)type {
+- (void)writeData:(NSData *)data forCurrentCharacteristicWithType:(CBCharacteristicWriteType)type succeed:(nonnull WriteDataSucceedBlock)succeedBlock failed:(nonnull WriteDataFailedBlock)failedBlock{
     
     [self.currentPeripheral writeValue:data forCharacteristic:self.currentCharacteristic type:type];
+    
+    self.writeSucceedBlock = succeedBlock;
+    self.writeFailedBlock = failedBlock;
 }
 
 
@@ -195,8 +204,10 @@
 - (void)peripheral:(CBPeripheral *)peripheral didWriteValueForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error {
     if (error) {
         NSLog(@"write data failed!");
+        self.writeFailedBlock(error);
     }else {
         NSLog(@"write data succeed!");
+        self.writeSucceedBlock();
     }
 }
 

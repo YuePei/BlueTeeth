@@ -15,12 +15,12 @@ NS_ASSUME_NONNULL_BEGIN
 typedef void (^FindNewPeripheralBlock) (void);
 typedef void (^ConnectSucceedBlock) (CBPeripheral *currentPeripheral);
 typedef void (^ConnectFailedBlock) (NSError *error);
-
+typedef void (^WriteDataSucceedBlock) (void);
+typedef void (^WriteDataFailedBlock) (NSError *error);
 
 @interface BlueTeethTool : NSObject
 
-//找到新的蓝牙设备，通过Block告诉控制器：请执行 刷新列表 或者其它操作
-@property (nonatomic, copy)FindNewPeripheralBlock findNewPeripheralBlock;
+
 //当前连接的蓝牙设备
 @property (nonatomic, strong)CBPeripheral *currentPeripheral;
 //所有已发现的蓝牙设备
@@ -43,7 +43,7 @@ typedef void (^ConnectFailedBlock) (NSError *error);
 - (void)connectToPeripheral:(CBPeripheral *)peripheral succeed:(ConnectSucceedBlock)succeedBlock failed:(ConnectFailedBlock)failedBlock;
 
 //向设备写入数据
-- (void)writeData:(NSData *)data forCurrentCharacteristicWithType:(CBCharacteristicWriteType )type;
+- (void)writeData:(NSData *)data forCurrentCharacteristicWithType:(CBCharacteristicWriteType )type succeed:(WriteDataSucceedBlock)succeedBlock failed:(WriteDataFailedBlock)failedBlock;;
 
 @end
 
